@@ -7,9 +7,9 @@ const REQUIRED_SHEETS = [
 const ALLOWED_LOT_HOSTS = ['www.copart.com.br', 'copart.com.br'];
 
 function doGet() {
-  // O dashboard é servido pelo Apps Script autenticado; a API de ingestão usa somente POST.
-  return HtmlService.createHtmlOutputFromFile('Dashboard')
-    .setTitle('Monitor de Leilões');
+  // Esta implantação é pública apenas para o runner do GitHub enviar POSTs com secret.
+  // O painel fica em uma segunda implantação restrita da conta Google.
+  return json_({error: 'use_post'});
 }
 
 function doPost(e) {
@@ -252,18 +252,6 @@ function sendAlert_(alert, result) {
     return;
   }
   throw new Error(`Canal de alerta não suportado: ${alert.canal}`);
-}
-
-function getDashboardData() {
-  const ss = SpreadsheetApp.getActive();
-  assertSheets_(ss);
-  return objects_(ss, 'resultados').map(row => ({
-    titulo: row.titulo, lote: row.lote, site: row.site, uf: row.uf, cidade: row.cidade,
-    lance_atual: row.lance_atual, custo_total_estimado: row.custo_total_estimado,
-    margem_estimada_percentual: row.margem_estimada_percentual, pontuacao: row.pontuacao,
-    classificacao: row.classificacao, pendencias: row.pendencias, link: safeUrl_(row.link),
-    ultima_captura_em: row.ultima_captura_em,
-  }));
 }
 
 function assertApiKey_(provided) {

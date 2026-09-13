@@ -23,14 +23,13 @@ O exemplo em `buscas` usa a listagem oficial de financiamento da Copart. Começa
 
 ## Apps Script e painel privado
 
-1. Abra **Extensões → Apps Script** dentro da planilha.
-2. Cole [`google-apps-script/Code.gs`](google-apps-script/Code.gs) em `Code.gs`.
-3. Crie um arquivo HTML chamado `Dashboard` e cole [`google-apps-script/Dashboard.html`](google-apps-script/Dashboard.html).
-4. Em **Configurações do projeto → Propriedades do script**, crie `MONITOR_API_KEY` com uma chave aleatória longa. Para Telegram, crie também `TELEGRAM_BOT_TOKEN`.
-5. Faça uma implantação de teste como **Aplicativo da Web**, executando como você. Restrinja o acesso às contas Google que podem ver o painel. Autorize o script uma vez no editor para habilitar Sheets, e-mail e Telegram.
-6. Copie a URL `/exec` da implantação. Essa URL vai ao secret do GitHub; a chave nunca vai no dashboard nem em URLs.
+1. Abra **Extensões → Apps Script** dentro da planilha e cole [`google-apps-script/Code.gs`](google-apps-script/Code.gs). Esse é o projeto da API.
+2. Em **Propriedades do script**, crie `MONITOR_API_KEY` com uma chave aleatória longa. Para Telegram, crie também `TELEGRAM_BOT_TOKEN`.
+3. Implante a API como **Aplicativo da Web**, executando como você e permitindo acesso público. A API não expõe dados por GET; aceita somente POST com a chave no corpo. Copie a URL `/exec` para o secret do GitHub.
+4. Crie um segundo projeto Apps Script, cole [`google-apps-script/DashboardProject.gs`](google-apps-script/DashboardProject.gs) e [`google-apps-script/Dashboard.html`](google-apps-script/Dashboard.html).
+5. No segundo projeto, crie a propriedade `SHEET_ID` com o ID da planilha. Implante o painel como Aplicativo da Web com acesso restrito à sua conta Google.
 
-O painel real é a página da implantação autenticada do Apps Script. A página em `dashboard/` é somente uma página pública de orientação no GitHub Pages, sem dados operacionais e sem segredos.
+Essa separação permite que o GitHub Actions envie dados sem tornar o painel público. A página em `dashboard/` é somente uma página pública de orientação no GitHub Pages, sem dados operacionais e sem segredos.
 
 ## GitHub Actions
 
