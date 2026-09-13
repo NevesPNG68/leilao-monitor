@@ -1,0 +1,5 @@
+id,busca_id,nome,tipo,valor,origem,ativo
+comissao-padrao,,Comissão do leilão,percentual_sobre_lance,5,Estimativa configurada; confirme edital,1
+frete-reserva,,Frete,fixo,2500,Estimativa configurada por operação,1
+regularizacao-reserva,,Documentação e regularização,fixo,1500,Estimativa configurada; confirme edital e DETRAN,1
+reparos-reserva,,Reserva de reparos,fixo,5000,Estimativa configurada; revisar fotos e vistoria,1

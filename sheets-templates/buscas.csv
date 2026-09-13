@@ -1,0 +1,2 @@
+id,nome,site,search_url,ativo,marcas,modelos,ano_minimo,ano_maximo,km_maximo,condicoes_fisicas,procedencias,categorias,modo_estados,paginas_maximas,preco_revenda_referencia,valor_referencia_tipo,margem_minima_percentual,teto_custo_total
+copart-financiamento-br,Copart | financiamento | Brasil,copart,https://www.copart.com.br/quickpick/financiamento/?displayStr=Financiamento&from=popularSearch&page=1,1,"[]","[]",2015,,,"[""NAO BATIDO""]","[""FINANCIAMENTO"",""ADMINISTRATIVO""]","[""Automóveis""]",todos,,,,15,70000

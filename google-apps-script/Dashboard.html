@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <base target="_top">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Monitor de Leilões</title>
+  <style>
+    :root{--bg:#0d1117;--panel:#161b22;--line:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--good:#3fb950;--warn:#d29922;--bad:#f85149}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px system-ui,-apple-system,sans-serif}.wrap{max-width:1280px;margin:auto;padding:28px 20px}header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:24px}h1{font-size:24px;margin:0}.muted{color:var(--muted)}button{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:8px;padding:9px 13px;cursor:pointer}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}.card,.panel{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:16px}.value{font-size:24px;font-weight:700;margin-top:5px}.panel{overflow:auto}table{width:100%;border-collapse:collapse;min-width:920px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:600}.badge{display:inline-block;padding:3px 7px;border-radius:999px;font-weight:700;font-size:11px;white-space:nowrap}.PRIORITÁRIA{background:#163a25;color:#7ee787}.PENDENTE{background:#3b2a13;color:#e3b341}.FORA{background:#401b1b;color:#ff7b72}a{color:var(--accent)}#status{min-height:20px}@media(max-width:760px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.wrap{padding:18px 12px}header{align-items:flex-start;flex-direction:column}}</style>
+</head>
+<body><main class="wrap"><header><div><h1>Monitor de Leilões</h1><div class="muted" id="status">Carregando oportunidades…</div></div><button id="refresh" type="button">Atualizar</button></header>
+<section class="cards"><div class="card"><div class="muted">Oportunidades prioritárias</div><div class="value" id="priority">–</div></div><div class="card"><div class="muted">Custo estimado médio</div><div class="value" id="cost">–</div></div><div class="card"><div class="muted">Nota média</div><div class="value" id="score">–</div></div><div class="card"><div class="muted">Pendentes de dados</div><div class="value" id="pending">–</div></div></section>
+<section class="panel"><table><thead><tr><th>Veículo</th><th>Origem</th><th>Lance observado</th><th>Custo total estimado</th><th>Margem</th><th>Nota</th><th>Classificação</th><th>Pendências</th><th></th></tr></thead><tbody id="rows"></tbody></table></section></main>
+<script>
+  const brl = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
+  const number = value => { const raw=String(value || '').replace(/[R$\s]/g,''); const normalized=raw.includes(',') ? raw.replace(/\./g,'').replace(',','.') : raw; const parsed=Number(normalized); return Number.isFinite(parsed) ? parsed : null; };
+  const cell = (row, text) => { const item=document.createElement('td'); item.textContent=text || '—'; row.append(item); return item; };
+  const money = value => { const parsed=number(value); return parsed === null ? '—' : brl.format(parsed); };
+  function render(data){
+    const rows=[...data].sort((a,b)=>Number(b.pontuacao||0)-Number(a.pontuacao||0));
+    const priority=rows.filter(r=>r.classificacao==='PRIORITÁRIA'); const costs=rows.map(r=>number(r.custo_total_estimado)).filter(v=>v!==null);
+    document.getElementById('priority').textContent=priority.length; document.getElementById('cost').textContent=costs.length?brl.format(costs.reduce((a,b)=>a+b,0)/costs.length):'—';
+    document.getElementById('score').textContent=rows.length?(rows.reduce((sum,r)=>sum+Number(r.pontuacao||0),0)/rows.length).toFixed(1):'—';
+    document.getElementById('pending').textContent=rows.filter(r=>r.classificacao==='PENDENTE DE DADOS').length;
+    const body=document.getElementById('rows'); body.replaceChildren();
+    rows.forEach(item=>{ const row=document.createElement('tr'); cell(row,item.titulo); cell(row,[item.site,item.lote,item.uf].filter(Boolean).join(' · ')); cell(row,money(item.lance_atual)); cell(row,money(item.custo_total_estimado)); cell(row,item.margem_estimada_percentual ? `${item.margem_estimada_percentual}%` : '—'); cell(row,item.pontuacao); const classification=cell(row,''); const badge=document.createElement('span'); badge.className=`badge ${item.classificacao.startsWith('PRIORIT')?'PRIORITÁRIA':item.classificacao.startsWith('PENDENTE')?'PENDENTE':'FORA'}`; badge.textContent=item.classificacao||'—'; classification.append(badge); cell(row,item.pendencias); const link=cell(row,''); if(item.link){const anchor=document.createElement('a');anchor.href=item.link;anchor.target='_blank';anchor.rel='noopener noreferrer';anchor.textContent='Ver lote';link.append(anchor)}body.append(row) });
+    document.getElementById('status').textContent=`${rows.length} resultado(s) carregado(s) com acesso autenticado.`;
+  }
+  function load(){document.getElementById('status').textContent='Atualizando…'; google.script.run.withSuccessHandler(render).withFailureHandler(error=>{document.getElementById('status').textContent=`Falha ao carregar: ${error.message||error}`}).getDashboardData();}
+  document.getElementById('refresh').addEventListener('click',load); load();
+</script></body></html>

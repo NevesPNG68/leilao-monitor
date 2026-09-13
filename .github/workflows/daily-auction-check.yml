@@ -1,0 +1,38 @@
+name: Monitor de leilões
+
+on:
+  schedule:
+    - cron: "30 9 * * *"
+      timezone: "America/Sao_Paulo"
+  workflow_dispatch: {}  # permite rodar manualmente pelo GitHub também
+
+concurrency:
+  group: auction-monitor
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependências
+        run: |
+          pip install -r requirements.txt
+          playwright install --with-deps chromium
+
+      - name: Validar núcleo de cálculo
+        run: python -m unittest discover -s tests -v
+
+      - name: Rodar scraper
+        env:
+          SHEETS_WEBAPP_URL: ${{ secrets.SHEETS_WEBAPP_URL }}
+          SHEETS_API_KEY: ${{ secrets.SHEETS_API_KEY }}
+          DAILY_SUMMARY: ${{ github.event_name == 'schedule' && '1' || '0' }}
+        run: python scraper.py

@@ -1,0 +1,5 @@
+chave,valor,descricao
+teto_custo_total_padrao,70000,Teto inicial de custo total por veículo em reais
+fuso_horario,America/Sao_Paulo,Base das datas exibidas e do resumo diário
+horario_resumo_diario,09:30,Horário desejado para o relatório diário
+dias_retentativa_alerta,3,Quantidade de tentativas posteriores para alerta que falhou

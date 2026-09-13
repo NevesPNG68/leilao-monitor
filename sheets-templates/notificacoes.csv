@@ -1,0 +1,3 @@
+id,tipo,destino,ativo,alerta_imediato,resumo_diario,pontuacao_minima,tentativas_maximas
+email-principal,email,seuemail@exemplo.com,1,1,1,70,3
+telegram-principal,telegram,SEU_CHAT_ID_TELEGRAM,1,1,1,70,3
